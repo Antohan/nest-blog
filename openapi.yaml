@@ -1,0 +1,42 @@
+openapi: "3.0.3"
+
+info:
+  title: "Blog-API"
+  version: "0.0.1"
+
+paths:
+  /articles:
+    get:
+      responses:
+        "200":
+          description: TODO
+
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: Article 1
+                content:
+                  type: string
+                  example: Article 1 content
+      responses:
+        "200":
+          description: TODO
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    example: Article 1
+                  content:
+                    type: string
+                    example: Article 1 content
