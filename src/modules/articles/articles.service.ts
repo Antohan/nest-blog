@@ -26,15 +26,21 @@ export class ArticlesService {
   }
 
   async update(id: string, updateArticleDto: UpdateArticleDto): Promise<Article> {
-    const article = this.articles.find((article) => article.id === id);
-    for (const key in updateArticleDto) {
-      article[key] = updateArticleDto[key];
+    const articleIndex = this.articles.findIndex((article) => article.id === id);
+    if (articleIndex === -1) {
+      throw new Error('Not found');
     }
-    return article;
+    this.articles[articleIndex] = { ...this.articles[articleIndex], ...updateArticleDto };
+    return this.articles[articleIndex];
   }
 
-  async remove(id: string): Promise<void> {
-    const index = this.articles.findIndex((article) => article.id === id);
-    this.articles.splice(index, 1);
+  async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
+    try {
+      const index = this.articles.findIndex((article) => article.id === id);
+      this.articles.splice(index, 1);
+      return { deleted: true };
+    } catch (error) {
+      return { deleted: false, message: error.message };
+    }
   }
 }
