@@ -1,46 +1,37 @@
-import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { Article } from './entities/article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-artice.dto';
 
 @Injectable()
 export class ArticlesService {
-  private readonly articles: Article[] = [];
+  constructor(@InjectModel(Article) private readonly articleModel: typeof Article) {}
 
   async findAll(): Promise<Article[]> {
-    return this.articles;
+    return this.articleModel.findAll<Article>();
   }
 
   async create(createArticleDto: CreateArticleDto): Promise<Article> {
-    const article: Article = {
-      id: randomUUID(),
-      ...createArticleDto,
-    };
-    this.articles.push(article);
-    return article;
+    return await this.articleModel.create<Article>(createArticleDto);
   }
 
   async findOne(id: string): Promise<Article> {
-    return this.articles.find((article) => article.id === id);
+    return this.articleModel.findOne({ where: { id } });
   }
 
-  async update(id: string, updateArticleDto: UpdateArticleDto): Promise<Article> {
-    const articleIndex = this.articles.findIndex((article) => article.id === id);
-    if (articleIndex === -1) {
-      throw new Error('Not found');
-    }
-    this.articles[articleIndex] = { ...this.articles[articleIndex], ...updateArticleDto };
-    return this.articles[articleIndex];
+  async update(
+    id: string,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<{ numberOfAffectedRows: number; updatedArticle: Article }> {
+    const [numberOfAffectedRows, [updatedArticle]] = await this.articleModel.update<Article>(
+      updateArticleDto,
+      { where: { id }, returning: true },
+    );
+    return { numberOfAffectedRows, updatedArticle };
   }
 
-  async remove(id: string): Promise<{ deleted: boolean; message?: string }> {
-    try {
-      const index = this.articles.findIndex((article) => article.id === id);
-      this.articles.splice(index, 1);
-      return { deleted: true };
-    } catch (error) {
-      return { deleted: false, message: error.message };
-    }
+  async remove(id: string): Promise<number> {
+    return await this.articleModel.destroy({ where: { id } });
   }
 }
