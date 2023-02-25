@@ -4,7 +4,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ArticlesModule } from '../articles/articles.module';
-import { Article } from '../articles/entities/article.entity';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 
@@ -20,7 +19,6 @@ import { UsersModule } from '../users/users.module';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        models: [Article],
         autoLoadModels: true,
         synchronize: true,
       }),
