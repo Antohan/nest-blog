@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { User } from '../../users/entities/user.entity';
 
 @Table
 export class Article extends Model<Article> {
@@ -21,4 +22,11 @@ export class Article extends Model<Article> {
     allowNull: false,
   })
   content: string;
+
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  userId: string;
 }
